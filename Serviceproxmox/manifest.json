@@ -1,0 +1,12 @@
+{
+    "id":           "serviceproxmox",
+	"type":         "mod",
+    "name":         "Proxmox",
+    "description":  "Proxmox VM provisioning",
+	"icon_url":     "icon.png",
+	"homepage_url": "https://github.com/scith/BoxBilling_Proxmox",
+    "author":       "Scith",
+	"author_url":   "https://github.com/scith/",
+	"license":      "GPL",
+    "version":      "1.0.0"
+}

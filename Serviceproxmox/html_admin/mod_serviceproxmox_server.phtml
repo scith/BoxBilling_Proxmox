@@ -1,0 +1,120 @@
+{% extends "layout_default.phtml" %}
+{% set active_menu = 'system' %}
+
+{% block breadcrumbs %}
+<ul>
+    <li class="firstB"><a href="{{ '/'|alink }}">{% trans 'Home' %}</a></li>
+    <li><a href="{{ 'serviceproxmox'|alink }}">{% trans 'Proxmox servers' %}</a></li>
+    <li class="lastB">{{ server.name }}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="widget">
+    <div class="head">
+        <h5>Server management</h5>
+    </div>
+
+	<form method="post" action="{{ 'api/admin/serviceproxmox/server_update'|link }}" id="server-update" class="mainForm save api-form" data-api-msg="Server updated">
+                <fieldset>
+                    <div class="rowElem noborder">
+                        <label>{% trans 'Name' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="name" value="{{ server.name }}" required="required" placeholder="{% trans 'Unique name to identify this server' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					<div class="rowElem">
+                        <label>{% trans 'Group' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="group" value="{{ server.group }}" placeholder="{% trans 'Server group' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					<div class="rowElem">
+                        <label>{% trans 'IPv4' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="ipv4" value="{{ server.ipv4 }}" placeholder="{% trans 'IPv4 address of the server' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					<div class="rowElem">
+                        <label>{% trans 'IPv6' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="ipv6" value="{{ server.ipv6 }}" placeholder="{% trans 'IPv6 address of the server' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+                    <div class="rowElem">
+                        <label>{% trans 'Hostname' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="hostname" value="{{ server.hostname }}" placeholder="{% trans 'server1.yourserverdomain.com' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					<div class="rowElem">
+                        <label>{% trans 'Slots' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="slots" value="{{ server.slots }}" required="required" placeholder="{% trans 'Maximum number of accounts on this server' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+                    <div class="rowElem">
+                        <label>{% trans 'Root user' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="root_user" required="required" value="{{ server.root_user }}" placeholder="{% trans 'Root username' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+                    
+                    <div class="rowElem">
+                        <label>{% trans 'Root Password' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="root_password" required="required" value="{{ server.root_password }}" placeholder="{% trans 'Root password of the server' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<div class="rowElem">
+                        <label>{% trans 'Extra config' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="config" value="{{ server.config }}" placeholder="{% trans 'extra config' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{% trans 'Enable/Disable' %}:</label>
+                            <div class="formRight">
+                                <input type="radio" name="active" value="1" {% if server.active %}checked="checked"{% endif %}/><label>{% trans 'Enable' %}</label>
+								<input type="radio" name="active" value="0" {% if not server.active %}checked="checked"{% endif %}/><label>{% trans 'Disable' %}</label>
+                            </div>
+                        <div class="fix"></div>
+                    </div>
+			<input type="submit" value="{% trans 'Update server' %}" class="greyishBtn submitForm" />
+            <input type="button" value="{% trans 'Test connection' %}" class="greyishBtn submitForm" id="test-connection"/>
+        </fieldset>
+
+        <input type="hidden" name="server_id" value="{{ server.id }}" />
+    </form>
+
+</div>
+
+{% endblock %}
+
+{% block js%}
+<script type="text/javascript">
+$(function() {
+
+    $('#test-connection').click(function(){
+        $('#server-update').submit();
+        bb.post('admin/serviceproxmox/server_test_connection', {id:{{server.id}}}, function(result){
+            bb.msg('Successfully connected to server');
+        });
+        return false;
+    });
+
+});
+</script>
+
+{% endblock %}

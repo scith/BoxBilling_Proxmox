@@ -1,0 +1,84 @@
+{% set server = admin.serviceproxmox_server_get_from_order({"order_id":order.id}) %}
+
+<div class="help">
+    <h2>{% trans 'Details' %}</h2>
+</div>
+<table class="tableStatic wide">
+    <tbody>
+        <tr class="noborder">
+            <td style="width: 30%;">{% trans 'Status' %}:</td>
+            <td>{{mf.status_name(order.status)}}</td>
+        </tr>
+
+        <tr>
+            <td>{% trans 'Server Name' %}:</td>
+            <td><a href="{{ 'serviceproxmox/server'|alink }}/{{ server.id }}">{{ server.name }}</a></td>
+        </tr>
+		<tr>
+            <td>{% trans 'Server Group' %}:</td>
+            <td><a href="{{ 'serviceproxmox/server'|alink }}/{{ server.id }}">{{ server.group }}</a></td>
+        </tr>
+        <tr>
+            <td>{% trans 'Server IPv4' %}:</td>
+            <td>{{ server.ipv4 }}</td>
+        </tr>
+		<tr>
+            <td>{% trans 'Server IPv6' %}:</td>
+            <td>{{ server.ipv6 }}</td>
+        </tr>
+		<tr>
+            <td>{% trans 'Server Hostname' %}:</td>
+            <td>{{ server.hostname }}</td>
+        </tr>
+		<tr>
+            <td>{% trans 'Server Capacity' %}:</td>
+            <td>{{ server.used_slots }}/{{ server.slots }}</td>
+        </tr>
+		<tr>
+            <td>{% trans 'Server root user' %}:</td>
+            <td>{{ server.root_user }}</td>
+        </tr>
+		<tr>
+            <td>{% trans 'Server root password' %}:</td>
+            <td>{{ server.root_password }}</td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="2">
+                <div class="aligncenter">
+                    {{ order_actions }}
+                    <a class="btn55 mr10" href="https://{{ server.access }}:8006" target="_blank"><img src="images/icons/middlenav/linux.png" alt=""><span>{% trans 'Jump to Proxmox admin panel' %}</span></a>
+
+                    <a href="{{ 'api/admin/serviceproxmox/sync'|link({'order_id' : order.id }) }}" data-api-confirm="Are you sure?" data-api-msg="Account was synced" class="btn55 mr10 api-link"><img src="images/icons/middlenav/transfer.png" alt=""><span>Sync with server</span></a>
+                </div>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="help">
+    <h2>{% trans 'Change account password' %}</h2>
+</div>
+
+<form action="{{ 'api/admin/serviceproxmox/change_password'|link }}" method="post" class="mainForm api-form save" data-api-msg="{% trans 'Account password changed' %}">
+<fieldset>
+    <div class="rowElem noborder">
+        <label>{% trans 'Password' %}:</label>
+        <div class="formRight">
+            <input type="password" name="password" required="required"/>
+        </div>
+        <div class="fix"></div>
+    </div>
+    <div class="rowElem">
+        <label>{% trans 'Password Confirm' %}:</label>
+        <div class="formRight">
+            <input type="password" name="password_confirm"  required="required"/>
+        </div>
+        <div class="fix"></div>
+    </div>
+
+    <input type="hidden" name="order_id" value="{{ order.id }}">
+    <input type="submit" value="{% trans 'Change' %}" class="greyishBtn submitForm" />
+</fieldset>
+</form>

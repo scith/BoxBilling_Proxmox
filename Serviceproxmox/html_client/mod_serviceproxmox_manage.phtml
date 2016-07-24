@@ -1,0 +1,22 @@
+{% if order.status == 'active' %}
+{% set server = client.serviceproxmox_server_get({"order_id":order.id}) %}
+
+	<p class="text-center">
+		Status: {{ server.status }}
+	
+		<div class="control-group controls-row text-center">
+			<a class="btn btn-success api-link" href="{{ 'api/client/serviceproxmox/vm_manage'|link({'order_id' : order.id, 'method' : 'start'}) }}" data-api-confirm="{% trans 'Are you sure?' %}" data-api-msg="{% trans 'VM starting. Reload page after a few moments.' %}">{% trans 'Start VM' %}</a>
+			<a class="btn btn-danger api-link" href="{{ 'api/client/serviceproxmox/vm_manage'|link({'order_id' : order.id, 'method' : 'shutdown'}) }}" data-api-confirm="{% trans 'Are you sure?' %}" data-api-msg="{% trans 'VM shutting down. Reload page after a few moments.' %}">{% trans 'Shutdown VM' %}</a>
+			<a class="btn btn-warning api-link" href="{{ 'api/client/serviceproxmox/vm_manage'|link({'order_id' : order.id, 'method' : 'reboot'}) }}" data-api-confirm="{% trans 'Are you sure?' %}" data-api-msg="{% trans 'VM rebooting. Reload page after a few moments.' %}">{% trans 'Reboot VM' %}</a>
+		</div>
+
+		<h2>{% trans 'Console' %}</h2>
+		{% if server.status == "running" %}
+			{{ server.cli|raw }}
+		{% else %}
+			{% trans 'The server needs to be running' %}
+		{% endif %}
+	</p>
+
+
+{% endif %}

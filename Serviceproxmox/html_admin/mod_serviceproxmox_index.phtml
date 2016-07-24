@@ -1,0 +1,162 @@
+{% extends "layout_default.phtml" %}
+{% block meta_title %}{% trans 'Proxmox servers' %}{% endblock %}
+{% set active_menu = 'system' %}
+
+{% block content %}
+<div class="widget simpleTabs">
+
+    <ul class="tabs">
+        <li><a href="#tab-index">{% trans 'Servers' %}</a></li>
+        <li><a href="#tab-new-server">{% trans 'New server' %}</a></li>
+    </ul>
+
+    <div class="tabs_container">
+        <div class="fix"></div>
+        <div class="tab_content nopadding" id="tab-index">
+
+		    {% set servers_grouped = admin.serviceproxmox_server_get_list() %}
+            {% for group in servers_grouped %}
+            <div class="help">
+                <h5>{% trans 'Servers' %}: <strong>{{group.group}}</strong> group</h5>
+            </div>
+
+            <table class="tableStatic wide">
+                <thead>
+                    <tr>
+                        <th>{% trans 'ID' %}</th>
+						<th>{% trans 'Name' %}</th>
+                        <th>{% trans 'Hostname/IP' %}</th>
+						<th>{% trans 'Slots' %}</th>
+                        <th>{% trans 'Active' %}</th>
+                        <th style="width:22%">&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+						{% for server in group.servers %}
+                    <tr>
+                        <td>{{server.id}}</td>
+						<td>{{server.name}}</td>
+                        <td><a href="https://{{server.access}}:8006" target="_blank">{{server.hostname}} {{server.ipv4}} {{server.ipv6}}</a></td>
+						<td>{{ server.used_slots }}/{{ server.slots }}</td>
+                        <td>{{ mf.q(server.active) }}</td>
+                        <td class="actions">
+                            <a class="bb-button btn14" href="https://{{server.access}}:8006" target="_blank"><img src="images/icons/dark/cog.png" alt=""></a>
+                            <a class="bb-button btn14 api-link" data-api-msg="Connected" href="{{ 'api/admin/serviceproxmox/server_test_connection'|link({'id' : server.id}) }}" title="Test connection"><img src="images/icons/dark/signal.png" alt=""></a>
+							<a class="bb-button btn14" href="{{ '/serviceproxmox/server'|alink }}/{{server.id}}"><img src="images/icons/dark/pencil.png" alt=""></a>
+                            <a class="bb-button btn14 bb-rm-tr api-link" data-api-confirm="Are you sure?" data-api-redirect="{{ 'serviceproxmox'|alink }}" href="{{ 'api/admin/serviceproxmox/server_delete'|link({'id' : server.id}) }}"><img src="images/icons/dark/trash.png" alt=""></a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7">{% trans 'The list is empty' %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="7"></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+		{% endfor %}
+        </div>
+		
+		
+        <div class="tab_content nopadding" id="tab-new-server">
+            <form method="post" action="admin/serviceproxmox/server_create" class="mainForm api-form" data-api-redirect="{{ 'serviceproxmox'|alink }}">
+                <fieldset>
+                    <div class="rowElem noborder">
+                        <label>{% trans 'Name' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="name" value="" required="required" placeholder="{% trans 'Unique name to identify this server' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					<div class="rowElem">
+                        <label>{% trans 'Group' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="group" value="" placeholder="{% trans 'Server group' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					<div class="rowElem">
+                        <label>{% trans 'IPv4' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="ipv4" value="" placeholder="{% trans 'IPv4 address of the server' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					<div class="rowElem">
+                        <label>{% trans 'IPv6' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="ipv6" value="" placeholder="{% trans 'IPv6 address of the server' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+                    <div class="rowElem">
+                        <label>{% trans 'Hostname' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="hostname" value="" placeholder="{% trans 'server1.yourserverdomain.com' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					<div class="rowElem">
+                        <label>{% trans 'Proxmox user realm' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="realm" value="" placeholder="{% trans 'pam' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					<div class="rowElem">
+                        <label>{% trans 'Slots' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="slots" value="" required="required" placeholder="{% trans 'Maximum number of accounts on this server' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+                    <div class="rowElem">
+                        <label>{% trans 'Root user' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="root_user" required="required" value="root" placeholder="{% trans 'Root username' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+                    
+                    <div class="rowElem">
+                        <label>{% trans 'Root Password' %}:</label>
+                        <div class="formRight">
+                            <input type="password" name="root_password" required="required" value="" placeholder="{% trans 'Root password of the server' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<div class="rowElem">
+                        <label>{% trans 'Extra config' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="config" value="" placeholder="{% trans 'extra config' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
+                        <label>{% trans 'Enable/Disable' %}:</label>
+                            <div class="formRight">
+                                <input type="radio" name="active" value="1" checked="checked"/><label>{% trans 'Enable' %}</label>
+                                <input type="radio" name="active" value="0"/><label>{% trans 'Disable' %}</label>
+                            </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<input type="submit" value="{% trans 'Add server' %}" class="greyishBtn submitForm" />
+                </fieldset>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+
+{% endblock %}

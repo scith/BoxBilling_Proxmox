@@ -1,0 +1,129 @@
+<form method="post" action="admin/serviceproxmox/product_update" class="mainForm api-form save" data-api-msg="Settings updated">
+<fieldset>
+	<div class="help">
+		<h5>{% trans 'Stock control settings' %}</h5>
+	</div>
+	
+    <div class="rowElem noborder">
+        <label>{% trans 'Show stock' %}:</label>
+        <div class="formRight">
+            <input type="radio" name="show_stock" value="1"{% if product.config.show_stock %} checked="checked"{% endif %}/><label>Yes</label>
+            <input type="radio" name="show_stock" value="0"{% if not product.config.show_stock %} checked="checked"{% endif %} /><label>No</label>
+        </div>
+        <div class="fix"></div>
+    </div>
+	
+	<div class="rowElem noborder">
+        <label>{% trans 'Server group name' %}:</label>
+        <div class="formRight">
+			{% set groups = admin.serviceproxmox_server_groups() %}
+			<select name="group">
+			{% for group in groups %}
+				<option value="{{group.group}}"{% if product.config.show_stock %} checked="checked"{% endif %}>{{group.group}}</option>
+			{% endfor %}
+			</select>
+
+        </div>
+        <div class="fix"></div>
+    </div>
+	
+	<div class="rowElem noborder">
+        <label>{% trans 'Filling method' %}:</label>
+        <div class="formRight">
+            <input type="radio" name="filling" value="least"{% if product.config.filling %} checked="checked"{% endif %}/><label>Least filled server</label>
+            <input type="radio" name="filling" value="full"{% if not product.config.filling %} checked="checked"{% endif %} /><label>Fill each server up</label>
+        </div>
+        <div class="fix"></div>
+    </div>
+ 
+ 	<div class="help">
+		<h5>{% trans 'VM settings' %}</h5>
+	</div>
+ 
+					<div class="rowElem">
+                        <label>{% trans 'Virtualization type' %}:</label>
+                            <div class="formRight">
+                                <input type="radio" name="virt" value="lxc"{% if product.config.virt == "lxc" %} checked="checked"{% endif %} /><label>{% trans 'LXC' %}</label>
+                                <input type="radio" name="virt" value="qemu"{% if product.config.virt == "qemu" %} checked="checked"{% endif %}/><label>{% trans 'qemu' %}</label>
+                            </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<div class="rowElem noborder">
+                        <label>{% trans 'Target storage' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="storage" value="{{ product.config.storage }}" required="required" placeholder="{% trans 'local' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<div class="rowElem noborder">
+                        <label>{% trans 'OS template (only LXC)' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="ostemplate" value="{{ product.config.ostemplate }}" placeholder="{% trans 'local:vztmpl/debian.tar.gz' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<div class="rowElem noborder">
+                        <label>{% trans 'ISO (only qemu)' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="cdrom" value="{{ product.config.cdrom }}" placeholder="{% trans 'local:iso/debian-latest-amd64.iso' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<div class="rowElem noborder">
+                        <label>{% trans 'RAM memory (in GB)' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="memory" value="{{ product.config.memory }}" required="required" placeholder="{% trans '1024' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<div class="rowElem noborder">
+                        <label>{% trans 'CPU core or limit' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="cpu" value="{{ product.config.cpu }}" required="required" placeholder="{% trans '1' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<div class="rowElem noborder">
+                        <label>{% trans 'Network net0' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="network" value="{{ product.config.network }}" required="required" placeholder="{% trans 'name=eth0,hwaddr=12:34:56:78:90:AB,ip=dhcp,ip6=dhcp,bridge=vmbr0' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<div class="rowElem noborder">
+                        <label>{% trans 'Storage ide0 (Storage:Size in GB)' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="ide0" value="{{ product.config.ide0 }}" required="required" placeholder="{% trans 'local:50' %}">
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<div class="rowElem noborder">
+                        <label>{% trans 'Should the VM be a QEMU clone?' %}:</label>
+                            <div class="formRight">
+                                <input type="radio" name="clone" value="1"{% if product.config.clone == 1 %} checked="checked"{% endif %} /><label>{% trans 'yes' %}</label>
+                                <input type="radio" name="clone" value="0"{% if product.config.clone == 0 %} checked="checked"{% endif %}/><label>{% trans 'no' %}</label>
+                            </div>
+                        <div class="fix"></div>
+                    </div>
+					
+					<div class="rowElem noborder">
+                        <label>{% trans 'VMID to clone (qemu clone only)' %}:</label>
+                        <div class="formRight">
+                            <input type="text" name="cloneid" value="{{ product.config.cloneid }}" placeholder="">
+                        </div>
+                        <div class="fix"></div>
+                    </div> 
+ 
+    <input type="submit" value="{% trans 'Update' %}" class="greyishBtn submitForm" />
+</fieldset>
+    
+<input type="hidden" name="id" value="{{ product.id }}" />
+</form>
